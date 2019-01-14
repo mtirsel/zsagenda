@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Škola Na Pohodu - registrace k zápisům pro školní rok {{ school_year }}{% endblock title %}
+
+
+{% block content %}
+    <div class="container">
+
+        <div class="row header">
+            <div class="col">
+                <a href="https://www.skolanapohodu.cz/" class="header__logo"><img src="{% static 'img/logo.png' %}" alt="Škola Na Pohodu"></a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+
+                <h1>Registrace k zápisům pro školní rok {{ school_year }}</h1>
+
+                <div class="instructions">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+
+                <form action="" method="POST" class="registration-form" novalidate onsubmit="form_submit_btn.disabled = true; return true;">
+
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        {% for err in form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ err }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% for field in form %}
+                        {% include "snippets/form_field.html" with field=field %}
+                    {% endfor %}
+
+                    <div class="row form-actions">
+                        <div class="col">
+                            <button type="submit" name="form_submit_btn" class="btn btn-primary">Odeslat</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% load static i18n %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        {% block head_css %}
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+            <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+        {% endblock head_css %}
+
+        {% block head_js %}
+        {% endblock head_js %}
+
+        <title>{% block title %}Škola Na Pohodu{% endblock title %}</title>
+    </head>
+    <body class="{% block body_class %}{% endblock body_class %}">
+
+        {% block content %}{% endblock content %}
+
+        {% block extra_body %}{% endblock extra_body %}
+
+    </body>
+</html>

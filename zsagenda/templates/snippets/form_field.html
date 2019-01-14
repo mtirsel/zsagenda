@@ -1,0 +1,32 @@
+<div class="form-group">
+    <label for="{{ field.id_for_label }}"{% if field.field.required %} class="required"{% endif %}>{{ field.label }}:</label>
+    {% if field.field.widget.input_type == 'select' %}
+        <select
+            class="form-control{% if field.errors %} is-invalid{% endif %}"
+            id="{{ field.id_for_label }}"
+            name="{{ field.html_name }}"
+        >
+            {% for o in field.field.choices %}
+                <option value="{{ o.0 }}"{% if field.value == o.0|stringformat:"s" %} selected{% endif %}>{{ o.1 }}</option>
+            {% endfor %}
+        </select>
+    {% else %}
+        <input
+            class="form-control{% if field.errors %} is-invalid{% endif %}"
+            id="{{ field.id_for_label }}"
+            name="{{ field.html_name }}"
+            type="text"
+            value="{{ field.value|default_if_none:'' }}"
+            {% if field.field.required %} required{% endif %}
+            {% if field.field.max_length %} maxlength="{{ field.field.max_length }}"{% endif %}
+        >
+    {% endif %}
+    {% if field.help_text %}
+        <small id="emailHelp" class="form-text text-muted">{{ field.help_text }}</small>
+    {% endif %}
+    {% if field.errors %}
+        <div class="invalid-feedback">
+            {{ field.errors }}
+        </div>
+    {% endif %}
+</div>

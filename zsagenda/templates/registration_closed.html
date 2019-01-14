@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Škola Na Pohodu - registrace k zápisům byla ukončena{% endblock title %}
+
+
+{% block content %}
+    <div class="container">
+
+        <div class="row header">
+            <div class="col">
+                <a href="https://www.skolanapohodu.cz/" class="header__logo"><img src="{% static 'img/logo.png' %}" alt="Škola Na Pohodu"></a>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col registration_closed">
+                {% if messages %}
+                    {% for m in messages %}
+                        <div class="alert alert-{{ m.tags }}">
+                            {{ m }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <h1>Registrace k zápisům již byla ukončena :(</h1>
+
+                <p>
+                    Litujeme, ale v tuto chvíli již nemáme další volná místa.
+                </p>
+
+                <p>
+                    <a href="https://www.skolanapohodu.cz/" class="btn btn-success">Návrat na domovskou stránku školy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
