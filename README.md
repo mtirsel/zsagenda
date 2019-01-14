@@ -1,1 +1,1 @@
-# zs-zapisy
+# Jednoducha appka pro vyber terminu na zapisy
