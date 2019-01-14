@@ -9,9 +9,7 @@ class RegistrationDateAdmin(admin.ModelAdmin):
         'date',
         'get_availability',
     )
-    # list_filter = (
-    #     'available',
-    # )
+    save_as = True
 
     def get_availability(self, obj):
         return obj.is_available()
