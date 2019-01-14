@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}Škola Na Pohodu - Chyba 500{% endblock title %}
+
+
+{% block content %}
+    <div class="container">
+
+        <div class="row header">
+            <div class="col">
+                <a href="https://www.skolanapohodu.cz/" class="header__logo"><img src="{% static 'img/logo.png' %}" alt="Škola Na Pohodu"></a>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col registration_closed">
+                <h1>500 - Něco se porouchalo :(</h1>
+
+                <p>
+                    Omlouváme se, ale někdo od ajťáků to zřejmě zvoral. Nebojte, už o tom vědí a pilně pracujou. Zkuste se sem prosím vrátit o něco později.
+                </p>
+
+                <p>
+                    <a href="https://www.skolanapohodu.cz/" class="btn btn-success">Návrat na domovskou stránku školy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

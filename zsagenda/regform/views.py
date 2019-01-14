@@ -53,7 +53,7 @@ def display_form(request):
 
         try:
             email.send()
-        except (smtplib.SMTPException, socket.gaierror):
+        except (smtplib.SMTPException, socket.gaierror, TimeoutError):
             messages.warning(
                 request,
                 mark_safe(
