@@ -20,6 +20,7 @@ class RegistrationDate(models.Model):
 class RegistrationAnswer(models.Model):
     reg_date = models.ForeignKey(
         RegistrationDate,
+        verbose_name='Termín pro registraci',
         on_delete=models.PROTECT
     )
     email = models.EmailField(
