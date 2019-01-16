@@ -61,17 +61,11 @@ class RegistrationAnswerForm(forms.ModelForm):
                 code='invalid_format'
             )
 
-        try:
-            reg_date = RegistrationDate.objects.filter(
-                date=parsed_date
-            ).exclude(
-                id__in=RegistrationAnswer.objects.all().values('reg_date')
-            ).first()
-        except RegistrationDate.DoesNotExist:
-            raise forms.ValidationError(
-                'Nesprávný formát termínu.',
-                code='invalid_format'
-            )
+        reg_date = RegistrationDate.objects.filter(
+            date=parsed_date
+        ).exclude(
+            id__in=RegistrationAnswer.objects.all().values('reg_date')
+        ).first()
         if not reg_date.is_available():
             # @todo: obejit defaultni hlasku `Vyberte platnou možnost, "31.01.2019 13:15" není k dispozici.`
             raise forms.ValidationError(
