@@ -3,7 +3,6 @@ from django.db import models
 
 class RegistrationDate(models.Model):
     date = models.DateTimeField(verbose_name='Termín')
-    # available = models.BooleanField(blank=True, default=True)
 
     class Meta:
         ordering = ['date']
@@ -21,7 +20,8 @@ class RegistrationAnswer(models.Model):
     reg_date = models.ForeignKey(
         RegistrationDate,
         verbose_name='Termín pro registraci',
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        unique=True,
     )
     email = models.EmailField(
         verbose_name='e-mail',

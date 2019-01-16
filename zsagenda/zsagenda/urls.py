@@ -21,6 +21,11 @@ from regform import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(
+        'is-reg-open/',
+        views.is_registration_open,
+        name='is_registration_open'
+    ),
+    path(
         'registrace-ukoncena/',
         views.registration_closed,
         name='registration_closed'

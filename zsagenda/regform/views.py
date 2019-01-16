@@ -4,14 +4,18 @@ import smtplib
 import socket
 
 from django.conf import settings
+from django.contrib import messages
 from django.core.mail import EmailMessage
+from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 from regform.forms import RegistrationAnswerForm
+from regform.models import RegistrationAnswer
+from regform.models import RegistrationDate
 
 
 def display_form(request):
@@ -27,53 +31,54 @@ def display_form(request):
 
     if form.is_valid():
         reg_obj = form.save()
-        messages.success(
-            request,
-            'Registrace k zápisům byla úspěšně provedena pod evidenčním číslem %d.' % (
-                reg_obj.identifier,
-            )
-        )
-
-        msg_plain = render_to_string(
-            'mail/registration_confirmation.txt',
-            dict(
-                reg_obj=reg_obj,
-            )
-        )
-
-        email = EmailMessage(
-            subject='Potvrzení o registraci k zápisům',
-            body=msg_plain,
-            from_email=settings.REG_FORM_EMAIL_SENDER,
-            to=[
-                reg_obj.email,
-            ],
-            cc=settings.REG_FORM_EMAIL_CC,
-        )
-
-        try:
-            email.send()
-        except (smtplib.SMTPException, socket.gaierror, TimeoutError):
-            messages.warning(
+        if form.is_valid():
+            messages.success(
                 request,
-                mark_safe(
-                    'Při odesílání e-mailu došlo k chybě a e-mail se Vám bohužel '
-                    'nepodařilo odeslat. Nemusíte mít obavy, registrace '
-                    'je platná pod výše uvedeným evidenčním číslem. V případě '
-                    'nejasností nás můžete <a href="%s">kontaktovat</a>.' % (
-                        settings.CONTACT_URL,
-                    )
+                'Registrace k zápisům byla úspěšně provedena pod evidenčním číslem %d.' % (
+                    reg_obj.identifier,
                 )
             )
-        else:
-            reg_obj.email_sent = True
-            reg_obj.save()
 
-        return redirect('registration_done')
+            msg_plain = render_to_string(
+                'mail/registration_confirmation.txt',
+                dict(
+                    reg_obj=reg_obj,
+                )
+            )
+
+            email = EmailMessage(
+                subject='Potvrzení o registraci k zápisům',
+                body=msg_plain,
+                from_email=settings.REG_FORM_EMAIL_SENDER,
+                to=[
+                    reg_obj.email,
+                ],
+                cc=settings.REG_FORM_EMAIL_CC,
+            )
+
+            try:
+                email.send()
+            except (smtplib.SMTPException, socket.gaierror, TimeoutError):
+                messages.warning(
+                    request,
+                    mark_safe(
+                        'Při odesílání e-mailu došlo k chybě a e-mail se Vám bohužel '
+                        'nepodařilo odeslat. Nemusíte mít obavy, registrace '
+                        'je platná pod výše uvedeným evidenčním číslem. V případě '
+                        'nejasností nás můžete <a href="%s">kontaktovat</a>.' % (
+                            settings.CONTACT_URL,
+                        )
+                    )
+                )
+            else:
+                reg_obj.email_sent = True
+                reg_obj.save()
+
+            return redirect('registration_done')
 
     today = datetime.date.today()
     if 12 >= today.month >= 9:
-        school_year = '%s/%s' % (today.year + 1, today.year)
+        school_year = '%s/%s' % (today.year + 1, today.year + 2)
     else:
         school_year = '%s/%s' % (today.year, today.year + 1)
 
@@ -101,3 +106,18 @@ def registration_done(request):
         'registration_done.html',
         dict()
     )
+
+
+def is_registration_open(request):
+    response = JsonResponse(
+        dict(
+            is_open=RegistrationDate.objects.filter(
+                date__gt=timezone.now(),
+            ).exclude(
+                id__in=RegistrationAnswer.objects.all().values('reg_date')
+            ).exists()
+        )
+    )
+    if hasattr(settings, 'REG_API_ALLOW_ORIGIN'):
+        response['Access-Control-Allow-Origin'] = settings.REG_API_ALLOW_ORIGIN
+    return response
