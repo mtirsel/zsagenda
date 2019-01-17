@@ -1,6 +1,16 @@
-Potvrzení o registraci k zápisům
+Potvrzení o registraci k zápisu
 
 Přiřazený identifikátor: {{ reg_obj.identifier }}
+Termín zápisu: {{ reg_obj.reg_date }}
 
+
+--
 S pozdravem,
 ZŠ Na Pohodu
+
+nám. B. Martinů 5
+695 01 Hodonín
+
+tel.: +420 777 023 805
+web: https://www.skolanapohodu.cz/
+e-mail: info@skolanapohodu.cz

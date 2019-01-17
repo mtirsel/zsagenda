@@ -25,7 +25,8 @@ def display_form(request):
         if request.method == 'POST':
             messages.error(
                 request,
-                'Registrace nebyla provedena z důvodu vyčerpání volných míst.'
+                'Registrace nebyla provedena z důvodu vyčerpání volných míst. '
+                'Kontaktujte nás v případě, že chcete být evidováni jako náhradníci.'
             )
         return redirect('registration_closed')
 
@@ -34,7 +35,7 @@ def display_form(request):
         if form.is_valid():
             messages.success(
                 request,
-                'Registrace k zápisům byla úspěšně provedena pod evidenčním číslem %d.' % (
+                'Registrace k zápisu byla úspěšně provedena pod evidenčním číslem %d.' % (
                     reg_obj.identifier,
                 )
             )
