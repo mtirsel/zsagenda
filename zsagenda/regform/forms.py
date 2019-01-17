@@ -26,7 +26,7 @@ class RegistrationAnswerForm(forms.ModelForm):
             'email',
             'child_name',
             'parent_name',
-            'child_brith_date',
+            'child_birth_date',
             'contact',
             'address',
         ]
@@ -57,7 +57,7 @@ class RegistrationAnswerForm(forms.ModelForm):
             self.fields['reg_date'].choices
         )
 
-    def clean_date(self):
+    def clean_reg_date(self):
         try:
             parsed_date = datetime.datetime.strptime(
                 self.cleaned_data['reg_date'],
@@ -70,7 +70,7 @@ class RegistrationAnswerForm(forms.ModelForm):
             )
 
         reg_date = RegistrationDate.objects.filter(
-            date=parsed_date
+            date__date=parsed_date
         ).exclude(
             id__in=RegistrationAnswer.objects.all().values('reg_date')
         ).first()
@@ -85,15 +85,15 @@ class RegistrationAnswerForm(forms.ModelForm):
     def clean(self):
         cd = super().clean()
         child_name = cd.get('child_name', '').strip()
-        child_brith_date = cd.get('child_brith_date', '')
+        child_birth_date = cd.get('child_birth_date', '')
 
-        if child_name and child_brith_date:
+        if child_name and child_birth_date:
             # Potreba zabranit opakovanym registracim.
             # Stejne jmeno a datum narozeni se muze opakovat (napr. odklad
             # o rok), takze je potrebne dat urcity casovy odstup.
             is_duplicate = RegistrationAnswer.objects.filter(
                 child_name=child_name,
-                child_brith_date=child_brith_date,
+                child_birth_date=child_birth_date,
                 created__gt=timezone.now() - datetime.timedelta(days=90)
             )
             if is_duplicate:
@@ -116,6 +116,8 @@ class RegistrationAnswerForm(forms.ModelForm):
         reg_date = cd['reg_date']
         obj = super().save(commit=False)
         obj.reg_date = reg_date
+        # we need thist to satisfy the condition for count below
+        obj.identifier = settings.REG_IDENTIFIER_PREFIX
         try:
             obj.save()
         except IntegrityError:

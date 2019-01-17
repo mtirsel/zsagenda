@@ -35,7 +35,7 @@ def display_form(request):
         if form.is_valid():
             messages.success(
                 request,
-                'Registrace k zápisu byla úspěšně provedena pod evidenčním číslem %d.' % (
+                'Registrace k zápisu byla úspěšně provedena pod evidenčním číslem %s.' % (
                     reg_obj.identifier,
                 )
             )
@@ -48,7 +48,7 @@ def display_form(request):
             )
 
             email = EmailMessage(
-                subject='Potvrzení o registraci k zápisům',
+                subject='Potvrzení o registraci k zápisu',
                 body=msg_plain,
                 from_email=settings.REG_FORM_EMAIL_SENDER,
                 to=[

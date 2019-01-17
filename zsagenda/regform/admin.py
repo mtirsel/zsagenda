@@ -27,7 +27,7 @@ class RegistrationAnswerAdmin(admin.ModelAdmin):
         'email_sent',
         'child_name',
         'parent_name',
-        'child_brith_date',
+        'child_birth_date',
         'contact',
         'address',
         'note',

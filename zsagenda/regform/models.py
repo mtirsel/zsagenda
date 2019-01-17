@@ -13,15 +13,19 @@ class RegistrationDate(models.Model):
         return self.date.strftime('%d.%m.%Y %H:%M')
 
     def is_available(self):
-        return not self.registrationanswer_set.exists()
+        try:
+            self.registrationanswer
+            return False
+        except RegistrationAnswer.DoesNotExist:
+            return True
 
 
 class RegistrationAnswer(models.Model):
-    reg_date = models.ForeignKey(
+    reg_date = models.OneToOneField(
         RegistrationDate,
         verbose_name='Termín pro registraci',
         on_delete=models.PROTECT,
-        unique=True,
+        blank=True,
     )
     email = models.EmailField(
         verbose_name='e-mail',
@@ -35,7 +39,7 @@ class RegistrationAnswer(models.Model):
         verbose_name='jméno zákonného zástupce',
         max_length=100
     )
-    child_brith_date = models.DateField(
+    child_birth_date = models.DateField(
         verbose_name='datum narození dítěte',
         help_text='Ve formátu D.M.RRRR, např. 15.4.2013'
     )
@@ -51,7 +55,9 @@ class RegistrationAnswer(models.Model):
         verbose_name='přidělený identifikátor',
         max_length=10,
         blank=True,
-        default=''
+        default=None,
+        null=True,
+        unique=True,
     )
     note = models.TextField(
         verbose_name='interní poznámka',
