@@ -43,8 +43,8 @@ class RegistrationAnswer(models.Model):
         verbose_name='datum narození dítěte',
         help_text='Ve formátu D.M.RRRR, např. 15.4.2013'
     )
-    contact = models.CharField(
-        verbose_name='kontakt',
+    phone = models.CharField(
+        verbose_name='telefon',
         max_length=255,
     )
     address = models.CharField(

@@ -27,7 +27,7 @@ class RegistrationAnswerForm(forms.ModelForm):
             'child_name',
             'parent_name',
             'child_birth_date',
-            'contact',
+            'phone',
             'address',
         ]
 
