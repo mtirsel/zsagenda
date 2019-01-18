@@ -125,13 +125,18 @@ def registration_done(request):
 
 
 def is_registration_open(request):
+    if settings.FORCE_REPORT_OPEN:
+        is_open = True
+    else:
+        is_open = RegistrationDate.objects.filter(
+            date__gt=timezone.now(),
+        ).exclude(
+            id__in=RegistrationAnswer.objects.all().values('reg_date')
+        ).exists(),
+
     response = JsonResponse(
         dict(
-            is_open=RegistrationDate.objects.filter(
-                date__gt=timezone.now(),
-            ).exclude(
-                id__in=RegistrationAnswer.objects.all().values('reg_date')
-            ).exists()
+            is_open=is_open,
         )
     )
     if hasattr(settings, 'REG_API_ALLOW_ORIGIN'):

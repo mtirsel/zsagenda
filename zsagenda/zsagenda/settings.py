@@ -133,4 +133,6 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
+FORCE_REPORT_OPEN = False
+
 from .local_settings import *
