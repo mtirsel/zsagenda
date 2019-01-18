@@ -132,7 +132,7 @@ def is_registration_open(request):
             date__gt=timezone.now(),
         ).exclude(
             id__in=RegistrationAnswer.objects.all().values('reg_date')
-        ).exists(),
+        ).exists()
 
     response = JsonResponse(
         dict(
