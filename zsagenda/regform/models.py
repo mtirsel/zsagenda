@@ -81,3 +81,29 @@ class RegistrationAnswer(models.Model):
     class Meta:
         verbose_name = 'Odpovědi z registrace'
         verbose_name_plural = 'Odpovědi z registrace'
+
+
+class SubstituteContact(models.Model):
+    name = models.CharField(
+        verbose_name='jméno',
+        max_length=100
+    )
+    email = models.EmailField(
+        verbose_name='e-mail',
+    )
+    phone = models.CharField(
+        verbose_name='telefon',
+        max_length=255,
+    )
+    created = models.DateTimeField(
+        verbose_name='Vytvořeno',
+        auto_now_add=True
+    )
+    modified = models.DateTimeField(
+        verbose_name='Změněno',
+        auto_now=True
+    )
+
+    class Meta:
+        verbose_name = 'Evidence náhradníků'
+        verbose_name_plural = 'Evidence náhradníků'

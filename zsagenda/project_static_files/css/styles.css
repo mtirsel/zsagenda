@@ -16,6 +16,11 @@ h1 {
     margin-bottom: 1em;
 }
 
+h2 {
+    margin-bottom: 1em;
+    text-align: center;
+}
+
 .container {
     max-width: 960px;
 }
@@ -28,13 +33,18 @@ h1 {
     text-align: left;
 }
 
-.registration-form {
+form {
     max-width: 600px;
     margin: auto;
     margin-bottom: 2em;
+    text-align: left;
 }
 
-.registration-form label.required {
+.substitution-form {
+    margin-top: 5em;
+}
+
+form label.required {
     font-weight: bold;
 }
 

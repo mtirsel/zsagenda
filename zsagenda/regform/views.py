@@ -6,14 +6,17 @@ import socket
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import EmailMessage
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
 from regform.forms import RegistrationAnswerForm
+from regform.forms import SubstituteContactForm
 from regform.models import RegistrationAnswer
 from regform.models import RegistrationDate
 
@@ -94,10 +97,22 @@ def display_form(request):
 
 
 def registration_closed(request):
+    form = SubstituteContactForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        messages.success(
+            request,
+            'Děkujeme za Váš zájem! Vaše údaje jsou nyní evidovány v seznamu náhradníků. Do týdne se Vám ozveme.'
+        )
+        return HttpResponseRedirect(
+            '%s?kontakt-odeslan' % reverse('registration_closed')
+        )
     return render(
         request,
         'registration_closed.html',
-        dict()
+        dict(
+            form=form,
+        )
     )
 
 

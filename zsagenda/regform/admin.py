@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from regform.models import RegistrationDate
 from regform.models import RegistrationAnswer
+from regform.models import SubstituteContact
 
 
 class RegistrationDateAdmin(admin.ModelAdmin):
@@ -36,3 +37,15 @@ class RegistrationAnswerAdmin(admin.ModelAdmin):
     )
 
 admin.site.register(RegistrationAnswer, RegistrationAnswerAdmin)
+
+
+class SubstituteContactAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'email',
+        'phone',
+        'created',
+        'modified',
+    )
+
+admin.site.register(SubstituteContact, SubstituteContactAdmin)

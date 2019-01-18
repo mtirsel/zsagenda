@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 
 from regform.models import RegistrationAnswer
 from regform.models import RegistrationDate
+from regform.models import SubstituteContact
 
 
 class RegistrationAnswerForm(forms.ModelForm):
@@ -139,3 +140,10 @@ class RegistrationAnswerForm(forms.ModelForm):
         obj.save()
 
         return obj
+
+
+class SubstituteContactForm(forms.ModelForm):
+
+    class Meta:
+        model = SubstituteContact
+        fields = '__all__'
