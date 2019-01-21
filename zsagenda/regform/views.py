@@ -5,12 +5,10 @@ import socket
 
 from django.conf import settings
 from django.contrib import messages
-from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils import timezone
@@ -19,6 +17,7 @@ from regform.forms import RegistrationAnswerForm
 from regform.forms import SubstituteContactForm
 from regform.models import RegistrationAnswer
 from regform.models import RegistrationDate
+from regform.utils import send_registration_email
 
 
 def display_form(request):
@@ -43,25 +42,8 @@ def display_form(request):
                 )
             )
 
-            msg_plain = render_to_string(
-                'mail/registration_confirmation.txt',
-                dict(
-                    reg_obj=reg_obj,
-                )
-            )
-
-            email = EmailMessage(
-                subject='Potvrzení o registraci k zápisu',
-                body=msg_plain,
-                from_email=settings.REG_FORM_EMAIL_SENDER,
-                to=[
-                    reg_obj.email,
-                ],
-                cc=settings.REG_FORM_EMAIL_CC,
-            )
-
             try:
-                email.send()
+                send_registration_email(reg_obj)
             except (smtplib.SMTPException, socket.gaierror, TimeoutError):
                 messages.warning(
                     request,
@@ -74,9 +56,6 @@ def display_form(request):
                         )
                     )
                 )
-            else:
-                reg_obj.email_sent = True
-                reg_obj.save()
 
             return redirect('registration_done')
 
