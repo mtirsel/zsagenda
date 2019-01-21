@@ -15,6 +15,7 @@ def send_registration_email(registration_answer):
         subject='Potvrzení o registraci k zápisu',
         body=msg_plain,
         from_email=settings.REG_FORM_EMAIL_SENDER,
+        reply_to=[settings.REG_FORM_EMAIL_REPLYTO],
         to=[
             registration_answer.email,
         ],
