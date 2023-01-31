@@ -23,6 +23,7 @@ admin.site.register(RegistrationDate, RegistrationDateAdmin)
 class RegistrationAnswerAdmin(admin.ModelAdmin):
     list_display = (
         'reg_date',
+        'substitute',
         'identifier',
         'email',
         'email_sent',
@@ -31,21 +32,29 @@ class RegistrationAnswerAdmin(admin.ModelAdmin):
         'child_birth_date',
         'phone',
         'address',
+        'get_possible_postponement',
         'note',
         'created',
         'modified',
     )
+    list_filter = (
+        'substitute',
+    )
+
+    def get_possible_postponement(self, obj):
+        return obj.get_possible_postponement_display()
+    get_possible_postponement.short_description = 'Uvažuje o odkladu'
 
 admin.site.register(RegistrationAnswer, RegistrationAnswerAdmin)
 
 
-class SubstituteContactAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'email',
-        'phone',
-        'created',
-        'modified',
-    )
+# class SubstituteContactAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'name',
+#         'email',
+#         'phone',
+#         'created',
+#         'modified',
+#     )
 
-admin.site.register(SubstituteContact, SubstituteContactAdmin)
+# admin.site.register(SubstituteContact, SubstituteContactAdmin)

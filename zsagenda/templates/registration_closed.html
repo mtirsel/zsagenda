@@ -36,7 +36,7 @@
                 </p>
 
                 {% if "kontakt-odeslan" not in request.GET %}
-                    <form action="" method="POST" class="substitution-form" novalidate onsubmit="form_submit_btn.disabled = true; return true;">
+                    <form action="{% url 'registration_closed' %}" method="POST" class="substitution-form" novalidate onsubmit="form_submit_btn.disabled = true; return true;">
 
                         <h2>Kontaktní údaje do evidence náhradníků</h2>
 

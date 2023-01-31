@@ -29,8 +29,9 @@ def display_form(request):
             messages.error(
                 request,
                 'Registrace nebyla provedena z důvodu vyčerpání volných míst. '
-                'Kontaktujte nás v případě, že chcete být evidováni jako náhradníci.'
+                'Můžeme Vás zaevidovat jako náhradníky, stačí formulář níže znovu odeslat.'
             )
+            return registration_closed(request, rerouted=True)
         return redirect('registration_closed')
 
     if form.is_valid():
@@ -96,9 +97,9 @@ def display_form(request):
     )
 
 
-def registration_closed(request):
+def registration_closed(request, rerouted=False):
     form = SubstituteContactForm(request.POST or None)
-    if form.is_valid():
+    if form.is_valid() and not rerouted:
         form.save()
         messages.success(
             request,

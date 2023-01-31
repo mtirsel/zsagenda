@@ -1,8 +1,10 @@
-Potvrzení o registraci k zápisu
+Dobrý den,
 
-Přiřazený identifikátor: {{ reg_obj.identifier }}
-Termín zápisu: {{ reg_obj.reg_date }}
+potvrzujeme termín zápisu do první třídy, který se bude konat {{ reg_obj.reg_date }}.
 
+Vaše registrační číslo: {{ reg_obj.identifier }}
+
+Nejpozději dva týdny před termínem zápisu Vám budou zaslány potřebné dokumenty.
 
 --
 S pozdravem,

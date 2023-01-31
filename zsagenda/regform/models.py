@@ -26,17 +26,18 @@ class RegistrationAnswer(models.Model):
         verbose_name='Termín pro registraci',
         on_delete=models.PROTECT,
         blank=True,
+        null=True,
     )
     email = models.EmailField(
         verbose_name='e-mail',
         help_text='Na tuto e-mailovou adresu obdržíte potvrzení o termínu zápisu.'
     )
     child_name = models.CharField(
-        verbose_name='jméno dítěte',
+        verbose_name='jméno a příjmení dítěte',
         max_length=100
     )
     parent_name = models.CharField(
-        verbose_name='jméno zákonného zástupce',
+        verbose_name='jméno a příjmení zákonného zástupce',
         max_length=100
     )
     child_birth_date = models.DateField(
@@ -48,7 +49,7 @@ class RegistrationAnswer(models.Model):
         max_length=255,
     )
     address = models.CharField(
-        verbose_name='adresa',
+        verbose_name='adresa trvalého bydliště',
         max_length=255
     )
     identifier = models.CharField(
@@ -64,10 +65,23 @@ class RegistrationAnswer(models.Model):
         blank=True,
         default=''
     )
+    possible_postponement = models.PositiveSmallIntegerField(
+        verbose_name='zvažujete odklad školní docházky?',
+        choices=(
+            (0, 'neznámo'),
+            (10, 'ano'),
+            (20, 'ne'),
+        ),
+        default=0,
+    )
     email_sent = models.BooleanField(
         verbose_name='e-mail byl úspěšně odeslán',
         default=False,
         blank=True,
+    )
+    substitute = models.BooleanField(
+        verbose_name='náhradník',
+        default=False,
     )
     created = models.DateTimeField(
         verbose_name='Vytvořeno',

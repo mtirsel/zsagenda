@@ -12,7 +12,20 @@ from regform.models import RegistrationDate
 from regform.models import SubstituteContact
 
 
-class RegistrationAnswerForm(forms.ModelForm):
+class BaseRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = RegistrationAnswer
+        fields = []
+        widgets = {
+            'possible_postponement': forms.widgets.RadioSelect()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # remove default choice
+        self.fields['possible_postponement'].choices = self.fields['possible_postponement'].choices[1:]
+
+class RegistrationAnswerForm(BaseRegistrationForm):
     ERR_MSG_UNAVAILABLE_REG_DATE = 'Tento termín již není k dispozici, zvolte prosím jiný.'
 
     reg_date = forms.ChoiceField(
@@ -21,16 +34,18 @@ class RegistrationAnswerForm(forms.ModelForm):
         error_messages=dict(invalid_choice=ERR_MSG_UNAVAILABLE_REG_DATE),
     )
 
-    class Meta:
-        model = RegistrationAnswer
+    class Meta(BaseRegistrationForm.Meta):
         fields = [
-            'email',
             'child_name',
-            'parent_name',
             'child_birth_date',
-            'phone',
             'address',
+            'parent_name',
+            'phone',
+            'email',
+            'possible_postponement',
+            'reg_date',
         ]
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,7 +53,7 @@ class RegistrationAnswerForm(forms.ModelForm):
         available_dates = RegistrationDate.objects.filter(
             date__gt=timezone.now(),
         ).exclude(
-            id__in=RegistrationAnswer.objects.all().values('reg_date')
+            id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
         ).values_list(
             'date',
             flat=True
@@ -73,7 +88,7 @@ class RegistrationAnswerForm(forms.ModelForm):
         reg_date = RegistrationDate.objects.filter(
             date__date=parsed_date
         ).exclude(
-            id__in=RegistrationAnswer.objects.all().values('reg_date')
+            id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
         ).first()
         if reg_date is None:
             raise forms.ValidationError(
@@ -142,8 +157,24 @@ class RegistrationAnswerForm(forms.ModelForm):
         return obj
 
 
-class SubstituteContactForm(forms.ModelForm):
+class SubstituteContactForm(BaseRegistrationForm):
+    
+    class Meta(BaseRegistrationForm.Meta):
+        fields = [
+            'child_name',
+            'child_birth_date',
+            'address',
+            'parent_name',
+            'phone',
+            'email',
+            'possible_postponement',
+        ]
 
-    class Meta:
-        model = SubstituteContact
-        fields = '__all__'
+    def save(self):
+        cd = self.cleaned_data
+        obj = super().save(commit=False)
+        obj.substitute = True
+        # we need thist to satisfy the condition for count below
+        obj.identifier = None
+        obj.save()
+        return obj
