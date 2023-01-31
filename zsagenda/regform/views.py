@@ -82,7 +82,7 @@ def registration_closed(request, rerouted=False):
         form.save()
         messages.success(
             request,
-            'Děkujeme za Váš zájem! Vaše údaje jsou nyní evidovány v seznamu náhradníků. Do týdne se Vám ozveme.'
+            'Registrovali jsme Vás jako náhradníky, v případě uvolnění místa Vás budeme kontaktovat.'
         )
         return HttpResponseRedirect(
             '%s?kontakt-odeslan' % reverse('registration_closed')
