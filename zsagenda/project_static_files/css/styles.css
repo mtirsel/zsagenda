@@ -82,4 +82,5 @@ form .legal-note {
 
 .form-group ul {
     list-style-type: none;
+    padding-left: 1rem;
 }
