@@ -10,6 +10,8 @@
                 <option value="{{ o.0 }}"{% if field.value == o.0|stringformat:"s" %} selected{% endif %}>{{ o.1 }}</option>
             {% endfor %}
         </select>
+    {% elif field.field.widget.input_type == 'radio' %}
+        {{ field }}
     {% else %}
         <input
             class="form-control{% if field.errors %} is-invalid{% endif %}"
@@ -25,7 +27,7 @@
         <small id="emailHelp" class="form-text text-muted">{{ field.help_text }}</small>
     {% endif %}
     {% if field.errors %}
-        <div class="invalid-feedback">
+        <div class="invalid-feedback" style="display:block">
             {{ field.errors }}
         </div>
     {% endif %}
