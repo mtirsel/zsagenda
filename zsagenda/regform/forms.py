@@ -86,7 +86,7 @@ class RegistrationAnswerForm(BaseRegistrationForm):
             )
 
         reg_date = RegistrationDate.objects.filter(
-            date__date=parsed_date
+            date=parsed_date
         ).exclude(
             id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
         ).first()
