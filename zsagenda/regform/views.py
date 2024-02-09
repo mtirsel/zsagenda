@@ -17,7 +17,7 @@ from regform.forms import RegistrationAnswerForm
 from regform.forms import SubstituteContactForm
 from regform.models import RegistrationAnswer
 from regform.models import RegistrationDate
-from regform.utils import send_registration_email
+from regform.utils import send_registration_email, send_substitute_registration_email
 
 
 def display_form(request):
@@ -79,7 +79,10 @@ def display_form(request):
 def registration_closed(request, rerouted=False):
     form = SubstituteContactForm(request.POST or None)
     if form.is_valid() and not rerouted:
-        form.save()
+        reg_obj = form.save()
+        # If not successfully sent, report 500,
+        # it is better than complicated handling of this case
+        send_substitute_registration_email(reg_obj)
         messages.success(
             request,
             'Registrovali jsme Vás jako náhradníky, v případě uvolnění místa Vás budeme kontaktovat.'

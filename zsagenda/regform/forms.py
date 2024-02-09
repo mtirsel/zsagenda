@@ -25,6 +25,7 @@ class BaseRegistrationForm(forms.ModelForm):
         # remove default choice
         self.fields['possible_postponement'].choices = self.fields['possible_postponement'].choices[1:]
 
+
 class RegistrationAnswerForm(BaseRegistrationForm):
     ERR_MSG_UNAVAILABLE_REG_DATE = 'Tento termín již není k dispozici, zvolte prosím jiný.'
 
@@ -158,7 +159,7 @@ class RegistrationAnswerForm(BaseRegistrationForm):
 
 
 class SubstituteContactForm(BaseRegistrationForm):
-    
+
     class Meta(BaseRegistrationForm.Meta):
         fields = [
             'child_name',
