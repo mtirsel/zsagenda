@@ -43,4 +43,3 @@ def send_substitute_registration_email(registration_answer):
         ],
     )
     email.send()
-    substitute_contact.save()
