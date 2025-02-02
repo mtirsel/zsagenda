@@ -56,15 +56,12 @@ class RegistrationAnswerForm(BaseRegistrationForm):
         ).exclude(
             id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
         ).values_list(
+            'pk',
             'date',
-            flat=True
         ).distinct()
-        available_dates = [
-            d.strftime('%d.%m.%Y %H:%M') for d in available_dates
-        ]
         choices = [
-            (d, d)
-            for d in available_dates
+            (pk, date.strftime('%d.%m.%Y %H:%M'))
+            for (pk, date) in available_dates
         ]
         if choices:
             self.fields['reg_date'].choices = [('', '-- Vyberte termín --')] + choices
@@ -76,22 +73,12 @@ class RegistrationAnswerForm(BaseRegistrationForm):
 
     def clean_reg_date(self):
         try:
-            parsed_date = datetime.datetime.strptime(
-                self.cleaned_data['reg_date'],
-                '%d.%m.%Y %H:%M'
-            )
-        except ValueError:
-            raise forms.ValidationError(
-                'Nesprávný formát termínu.',
-                code='invalid_format'
-            )
-
-        reg_date = RegistrationDate.objects.filter(
-            date=parsed_date
-        ).exclude(
-            id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
-        ).first()
-        if reg_date is None:
+            reg_date = RegistrationDate.objects.filter(
+                id=self.cleaned_data['reg_date']
+            ).exclude(
+                id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
+            ).get()
+        except RegistrationDate.DoesNotExist:
             raise forms.ValidationError(
                 self.ERR_MSG_UNAVAILABLE_REG_DATE,
                 code='invalid_choice'

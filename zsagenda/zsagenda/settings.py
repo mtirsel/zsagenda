@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+from datetime import date
 import os
 
 from django.contrib.messages import constants as messages
@@ -134,5 +135,9 @@ MESSAGE_TAGS = {
 }
 
 FORCE_REPORT_OPEN = False
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+REG_IDENTIFIER_PREFIX = date.today().strftime('%y')
 
 from .local_settings import *

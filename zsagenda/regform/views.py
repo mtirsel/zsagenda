@@ -114,7 +114,9 @@ def is_registration_open(request):
         is_open = RegistrationDate.objects.filter(
             date__gt=timezone.now(),
         ).exclude(
-            id__in=RegistrationAnswer.objects.all().values('reg_date')
+            id__in=RegistrationAnswer.objects.filter(
+                reg_date__isnull=False
+            ).values('reg_date')
         ).exists()
 
     response = JsonResponse(
