@@ -4,7 +4,7 @@ potvrzujeme termín zápisu do první třídy, který se bude konat {{ reg_obj.r
 
 Vaše registrační číslo: {{ reg_obj.identifier }}
 
-Nejpozději dva týdny před termínem zápisu Vám budou zaslány potřebné dokumenty.
+Před zápisem Vám mailem zašleme veškeré potřebné dokumenty k vyplnění.
 
 --
 S pozdravem,
