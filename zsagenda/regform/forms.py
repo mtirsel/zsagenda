@@ -12,6 +12,10 @@ from regform.models import RegistrationDate
 from regform.models import SubstituteContact
 
 
+class RegistrationFailedException(Exception):
+    pass
+
+
 class BaseRegistrationForm(forms.ModelForm):
     class Meta:
         model = RegistrationAnswer
@@ -46,7 +50,6 @@ class RegistrationAnswerForm(BaseRegistrationForm):
             'possible_postponement',
             'reg_date',
         ]
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -115,16 +118,43 @@ class RegistrationAnswerForm(BaseRegistrationForm):
 
         return cd
 
-    def save(self):
-        cd = self.cleaned_data
-        reg_date = cd['reg_date']
+    # def _save(self) -> RegistrationAnswer:  # type: ignore[override]  # pylint: disable=W0221
+    #     cd = self.cleaned_data
+    #     reg_date = cd['reg_date']
+    #     obj = super().save(commit=False)
+    #     obj.reg_date = reg_date
+    #     # we need thist to satisfy the condition for count below
+    #     obj.identifier = settings.REG_IDENTIFIER_PREFIX
+    #     try:
+    #         obj.save()
+    #     except IntegrityError as exc:
+    #         self.add_error(
+    #             'reg_date',
+    #             forms.ValidationError(
+    #                 self.ERR_MSG_UNAVAILABLE_REG_DATE,
+    #                 code='invalid_choice',
+    #             )
+    #         )
+
+    #     answers_count = RegistrationAnswer.objects.filter(
+    #         identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
+    #     ).count()
+    #     obj.identifier = f"{settings.REG_IDENTIFIER_PREFIX}{answers_count:02d}"
+    #     obj.save()
+
+    #     return obj
+
+    def save(self) -> RegistrationAnswer:  # type: ignore[override]  # pylint: disable=W0221
+        # cd = self.cleaned_data
+        answers_count = RegistrationAnswer.objects.filter(
+            identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
+        ).count()
         obj = super().save(commit=False)
-        obj.reg_date = reg_date
-        # we need thist to satisfy the condition for count below
-        obj.identifier = settings.REG_IDENTIFIER_PREFIX
+        obj.identifier = f"{settings.REG_IDENTIFIER_PREFIX}{answers_count:02d}"
         try:
             obj.save()
-        except IntegrityError:
+            return obj
+        except IntegrityError as exc:
             self.add_error(
                 'reg_date',
                 forms.ValidationError(
@@ -132,17 +162,7 @@ class RegistrationAnswerForm(BaseRegistrationForm):
                     code='invalid_choice',
                 )
             )
-            return
-
-        obj.identifier = '%s%02d' % (
-            settings.REG_IDENTIFIER_PREFIX,
-            RegistrationAnswer.objects.filter(
-                identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
-            ).count()
-        )
-        obj.save()
-
-        return obj
+            raise RegistrationFailedException() from exc
 
 
 class SubstituteContactForm(BaseRegistrationForm):

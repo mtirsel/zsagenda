@@ -35,12 +35,11 @@ def display_form(request):
 
     if form.is_valid():
         reg_obj = form.save()
-        if form.is_valid():
+        if form.is_valid() and reg_obj:
             messages.success(
                 request,
-                'Registrace k zápisu byla úspěšně provedena pod evidenčním číslem %s.' % (
-                    reg_obj.identifier,
-                )
+                f'Registrace k zápisu byla úspěšně provedena '
+                f'pod evidenčním číslem {reg_obj.identifier}.'
             )
 
             try:
@@ -88,7 +87,7 @@ def registration_closed(request, rerouted=False):
             'Registrovali jsme Vás jako náhradníky, v případě uvolnění místa Vás budeme kontaktovat.'
         )
         return HttpResponseRedirect(
-            '%s?kontakt-odeslan' % reverse('registration_closed')
+            f"{reverse('registration_closed')}?kontakt-odeslan"
         )
     return render(
         request,
