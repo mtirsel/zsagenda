@@ -26,7 +26,7 @@ class BaseRegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # remove default choice
+        # remove default choice "neznámo"
         self.fields['possible_postponement'].choices = self.fields['possible_postponement'].choices[1:]
 
 
@@ -106,49 +106,20 @@ class RegistrationAnswerForm(BaseRegistrationForm):
             if is_duplicate:
                 raise forms.ValidationError(
                     mark_safe(
-                        'Registrace s tímto jménem a datem narození již byla '
-                        'provedena. Pokud potřebujete změnit termín, '
-                        'nebo cokoliv jiného, <a href="%s">kontaktujte nás</a> '
-                        'prosím.' % (
-                            settings.CONTACT_URL,
-                        )
+                        f'Registrace s tímto jménem a datem narození již byla '
+                        f'provedena. Pokud potřebujete změnit termín, '
+                        f'nebo cokoliv jiného, <a href="{settings.CONTACT_URL}">kontaktujte nás</a> '
+                        f'prosím.'
                     ),
                     code='duplicate_registration'
                 )
 
         return cd
 
-    # def _save(self) -> RegistrationAnswer:  # type: ignore[override]  # pylint: disable=W0221
-    #     cd = self.cleaned_data
-    #     reg_date = cd['reg_date']
-    #     obj = super().save(commit=False)
-    #     obj.reg_date = reg_date
-    #     # we need thist to satisfy the condition for count below
-    #     obj.identifier = settings.REG_IDENTIFIER_PREFIX
-    #     try:
-    #         obj.save()
-    #     except IntegrityError as exc:
-    #         self.add_error(
-    #             'reg_date',
-    #             forms.ValidationError(
-    #                 self.ERR_MSG_UNAVAILABLE_REG_DATE,
-    #                 code='invalid_choice',
-    #             )
-    #         )
-
-    #     answers_count = RegistrationAnswer.objects.filter(
-    #         identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
-    #     ).count()
-    #     obj.identifier = f"{settings.REG_IDENTIFIER_PREFIX}{answers_count:02d}"
-    #     obj.save()
-
-    #     return obj
-
     def save(self) -> RegistrationAnswer:  # type: ignore[override]  # pylint: disable=W0221
-        # cd = self.cleaned_data
         answers_count = RegistrationAnswer.objects.filter(
             identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
-        ).count()
+        ).count() + 1
         obj = super().save(commit=False)
         obj.identifier = f"{settings.REG_IDENTIFIER_PREFIX}{answers_count:02d}"
         try:
@@ -178,11 +149,9 @@ class SubstituteContactForm(BaseRegistrationForm):
             'possible_postponement',
         ]
 
-    def save(self):
-        cd = self.cleaned_data
+    def save(self):  # type: ignore[override]  # pylint: disable=W0221
         obj = super().save(commit=False)
         obj.substitute = True
-        # we need thist to satisfy the condition for count below
         obj.identifier = None
         obj.save()
         return obj

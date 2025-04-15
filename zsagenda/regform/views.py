@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
-from regform.forms import RegistrationAnswerForm
+from regform.forms import RegistrationAnswerForm, RegistrationFailedException
 from regform.forms import SubstituteContactForm
 from regform.models import RegistrationAnswer
 from regform.models import RegistrationDate
@@ -34,44 +34,43 @@ def display_form(request):
         return redirect('registration_closed')
 
     if form.is_valid():
-        reg_obj = form.save()
-        if form.is_valid() and reg_obj:
+        try:
+            reg_obj = form.save()
             messages.success(
                 request,
                 f'Registrace k zápisu byla úspěšně provedena '
                 f'pod evidenčním číslem {reg_obj.identifier}.'
             )
-
+        except RegistrationFailedException:
+            pass
+        else:
             try:
                 send_registration_email(reg_obj)
             except (smtplib.SMTPException, socket.gaierror, TimeoutError):
                 messages.warning(
                     request,
                     mark_safe(
-                        'Při odesílání e-mailu došlo k chybě a e-mail se Vám bohužel '
-                        'nepodařilo odeslat. Nemusíte mít obavy, registrace '
-                        'je platná pod výše uvedeným evidenčním číslem. V případě '
-                        'nejasností nás můžete <a href="%s">kontaktovat</a>.' % (
-                            settings.CONTACT_URL,
-                        )
+                        f'Při odesílání e-mailu došlo k chybě a e-mail se Vám bohužel '
+                        f'nepodařilo odeslat. Nemusíte mít obavy, registrace '
+                        f'je platná pod výše uvedeným evidenčním číslem. V případě '
+                        f'nejasností nás můžete <a href="{settings.CONTACT_URL}">kontaktovat</a>.'
                     )
                 )
-
             return redirect('registration_done')
 
     today = datetime.date.today()
     if 12 >= today.month >= 9:
-        school_year = '%s/%s' % (today.year + 1, today.year + 2)
+        school_year = f'{today.year + 1}/{today.year + 2}'
     else:
-        school_year = '%s/%s' % (today.year, today.year + 1)
+        school_year = f'{today.year}/{today.year + 1}'
 
     return render(
         request,
         'registration_form.html',
-        dict(
-            form=form,
-            school_year=school_year
-        ),
+        {
+            'form': form,
+            'school_year': school_year
+        },
     )
 
 
