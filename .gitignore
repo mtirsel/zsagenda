@@ -100,8 +100,15 @@ venv.bak/
 # mkdocs documentation
 /site
 
-# mypy
-.mypy_cache/
-
 # Deployment
 fabfile.py
+
+# Docker / runtime
+data/
+
+# OS
+.DS_Store
+*.backup
+
+# Other
+.claude/

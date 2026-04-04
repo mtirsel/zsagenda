@@ -166,6 +166,7 @@ The CMD port and actual exposed port are controlled via env var at runtime throu
 ### docker-compose.yml
 
 ```yaml
+name: zsagenda
 services:
   web:
     build: .
@@ -207,8 +208,8 @@ All host-mounted data lives under `/app/data/`:
 ## Cleanup
 
 - Remove `requirements/` directory.
-- Remove `local_settings.py` import from settings.
-- Remove `.mypy_cache/`, mypy configs.
+- Remove `local_settings.py` import from settings but don't delete the file.
+- Remove mypy configs.
 - Update `.gitignore` (add `.env`, `data/`, `uv.lock` — keep tracked, remove mypy references).
 - Update `CLAUDE.md` to reflect new commands and structure.
 

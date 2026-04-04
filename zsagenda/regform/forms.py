@@ -12,6 +12,10 @@ from regform.models import RegistrationDate
 from regform.models import SubstituteContact
 
 
+class RegistrationFailedException(Exception):
+    pass
+
+
 class BaseRegistrationForm(forms.ModelForm):
     class Meta:
         model = RegistrationAnswer
@@ -22,7 +26,7 @@ class BaseRegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # remove default choice
+        # remove default choice "neznámo"
         self.fields['possible_postponement'].choices = self.fields['possible_postponement'].choices[1:]
 
 
@@ -47,7 +51,6 @@ class RegistrationAnswerForm(BaseRegistrationForm):
             'reg_date',
         ]
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -56,15 +59,12 @@ class RegistrationAnswerForm(BaseRegistrationForm):
         ).exclude(
             id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
         ).values_list(
+            'pk',
             'date',
-            flat=True
         ).distinct()
-        available_dates = [
-            d.strftime('%d.%m.%Y %H:%M') for d in available_dates
-        ]
         choices = [
-            (d, d)
-            for d in available_dates
+            (pk, date.strftime('%d.%m.%Y %H:%M'))
+            for (pk, date) in available_dates
         ]
         if choices:
             self.fields['reg_date'].choices = [('', '-- Vyberte termín --')] + choices
@@ -76,22 +76,12 @@ class RegistrationAnswerForm(BaseRegistrationForm):
 
     def clean_reg_date(self):
         try:
-            parsed_date = datetime.datetime.strptime(
-                self.cleaned_data['reg_date'],
-                '%d.%m.%Y %H:%M'
-            )
-        except ValueError:
-            raise forms.ValidationError(
-                'Nesprávný formát termínu.',
-                code='invalid_format'
-            )
-
-        reg_date = RegistrationDate.objects.filter(
-            date=parsed_date
-        ).exclude(
-            id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
-        ).first()
-        if reg_date is None:
+            reg_date = RegistrationDate.objects.filter(
+                id=self.cleaned_data['reg_date']
+            ).exclude(
+                id__in=RegistrationAnswer.objects.filter(reg_date__isnull=False).values('reg_date')
+            ).get()
+        except RegistrationDate.DoesNotExist:
             raise forms.ValidationError(
                 self.ERR_MSG_UNAVAILABLE_REG_DATE,
                 code='invalid_choice'
@@ -116,28 +106,26 @@ class RegistrationAnswerForm(BaseRegistrationForm):
             if is_duplicate:
                 raise forms.ValidationError(
                     mark_safe(
-                        'Registrace s tímto jménem a datem narození již byla '
-                        'provedena. Pokud potřebujete změnit termín, '
-                        'nebo cokoliv jiného, <a href="%s">kontaktujte nás</a> '
-                        'prosím.' % (
-                            settings.CONTACT_URL,
-                        )
+                        f'Registrace s tímto jménem a datem narození již byla '
+                        f'provedena. Pokud potřebujete změnit termín, '
+                        f'nebo cokoliv jiného, <a href="{settings.CONTACT_URL}">kontaktujte nás</a> '
+                        f'prosím.'
                     ),
                     code='duplicate_registration'
                 )
 
         return cd
 
-    def save(self):
-        cd = self.cleaned_data
-        reg_date = cd['reg_date']
+    def save(self) -> RegistrationAnswer:  # type: ignore[override]  # pylint: disable=W0221
+        answers_count = RegistrationAnswer.objects.filter(
+            identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
+        ).count() + 1
         obj = super().save(commit=False)
-        obj.reg_date = reg_date
-        # we need thist to satisfy the condition for count below
-        obj.identifier = settings.REG_IDENTIFIER_PREFIX
+        obj.identifier = f"{settings.REG_IDENTIFIER_PREFIX}{answers_count:02d}"
         try:
             obj.save()
-        except IntegrityError:
+            return obj
+        except IntegrityError as exc:
             self.add_error(
                 'reg_date',
                 forms.ValidationError(
@@ -145,17 +133,7 @@ class RegistrationAnswerForm(BaseRegistrationForm):
                     code='invalid_choice',
                 )
             )
-            return
-
-        obj.identifier = '%s%02d' % (
-            settings.REG_IDENTIFIER_PREFIX,
-            RegistrationAnswer.objects.filter(
-                identifier__startswith=settings.REG_IDENTIFIER_PREFIX,
-            ).count()
-        )
-        obj.save()
-
-        return obj
+            raise RegistrationFailedException() from exc
 
 
 class SubstituteContactForm(BaseRegistrationForm):
@@ -171,11 +149,9 @@ class SubstituteContactForm(BaseRegistrationForm):
             'possible_postponement',
         ]
 
-    def save(self):
-        cd = self.cleaned_data
+    def save(self):  # type: ignore[override]  # pylint: disable=W0221
         obj = super().save(commit=False)
         obj.substitute = True
-        # we need thist to satisfy the condition for count below
         obj.identifier = None
         obj.save()
         return obj
