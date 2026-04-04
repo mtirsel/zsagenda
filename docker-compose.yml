@@ -1,7 +1,11 @@
 name: zsagenda
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
     env_file: .env
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
