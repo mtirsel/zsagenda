@@ -41,7 +41,7 @@ class RegistrationAnswer(models.Model):
         max_length=100
     )
     child_birth_date = models.DateField(
-        verbose_name='datum narození dítěte',
+        verbose_name='datum narození',
         help_text='Ve formátu D.M.RRRR, např. 15.4.2013'
     )
     phone = models.CharField(

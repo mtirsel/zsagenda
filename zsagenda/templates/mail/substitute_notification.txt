@@ -1,0 +1,16 @@
+Automaticky vygenerovaný e-mail
+
+právě byl zaregistrován nový náhradník pro zápis do první třídy na ZŠ Na Pohodu.
+
+{% url 'admin:regform_registrationanswer_change' reg_obj.id %}
+
+--
+S pozdravem,
+ZŠ Na Pohodu
+
+nám. B. Martinů 5
+695 01 Hodonín
+
+tel.: +420 777 023 805
+web: https://www.skolanapohodu.cz/
+e-mail: info@skolanapohodu.cz

@@ -1,3 +1,9 @@
 -r base.txt
 
+model-bakery
+mypy
+django-stubs[compatible-mypy]
 pudb
+pylint
+pylint-django
+ruff
