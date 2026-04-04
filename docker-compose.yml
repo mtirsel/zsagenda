@@ -1,0 +1,19 @@
+name: zsagenda
+services:
+  web:
+    build: .
+    env_file: .env
+    ports:
+      - "${PORT:-8000}:${PORT:-8000}"
+    volumes:
+      - ./data/database:/app/data/database
+      - ./data/static:/app/data/static
+      - ./data/media:/app/data/media
+      - ./data/logs:/app/data/logs
+    command: >
+      uv run gunicorn zsagenda.wsgi:application
+      --chdir zsagenda
+      --bind 0.0.0.0:${PORT:-8000}
+      --workers 2
+      --access-logfile /app/data/logs/access.log
+      --error-logfile /app/data/logs/error.log
