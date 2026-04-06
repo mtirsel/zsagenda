@@ -1,23 +1,22 @@
 name: zsagenda
 services:
-  web:
+  app:
     build:
       context: .
       args:
         APP_UID: ${APP_UID:-1000}
         APP_GID: ${APP_GID:-1000}
     env_file: .env
+    restart: always
     ports:
-      - "${PORT:-8000}:${PORT:-8000}"
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
     volumes:
-      - ./data/database:/app/data/database
-      - ./data/static:/app/data/static
-      - ./data/media:/app/data/media
-      - ./data/logs:/app/data/logs
-    command: >
-      uv run gunicorn zsagenda.wsgi:application
-      --chdir zsagenda
-      --bind 0.0.0.0:${PORT:-8000}
-      --workers 2
-      --access-logfile /app/data/logs/access.log
-      --error-logfile /app/data/logs/error.log
+      - ./:/app
+      - app_venv:/app/.venv
+      - ${DATA_DIR:-./data}/database:/app/data/database
+      - ${DATA_DIR:-./data}/static:/app/data/static
+      - ${DATA_DIR:-./data}/media:/app/data/media
+      - ${DATA_DIR:-./data}/logs:/app/data/logs
+
+volumes:
+  app_venv:

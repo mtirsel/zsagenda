@@ -28,7 +28,7 @@ Docker:
 ```bash
 docker compose build                    # Build image
 docker compose up -d                    # Start container
-docker compose exec web uv run python zsagenda/manage.py migrate  # Run migrations
+docker compose exec app uv run python zsagenda/manage.py migrate  # Run migrations
 docker compose down                     # Stop container
 ```
 
@@ -65,7 +65,7 @@ Selection: `DJANGO_SETTINGS_MODULE` env var. `manage.py` defaults to `dev`, `wsg
 ## Docker
 
 - `Dockerfile` — Python 3.13-slim, uv for deps, Gunicorn WSGI server
-- `docker-compose.yml` — single `web` service, env from `.env`, volume mounts at `/app/data/` for database, static, media, logs
+- `docker-compose.yml` — single `app` service, env from `.env`, volume mounts at `/app/data/` for database, static, media, logs
 - `.env.example` — `DJANGO_SETTINGS_MODULE`, `SECRET_KEY`, `PORT`
 
 ## Dependencies
