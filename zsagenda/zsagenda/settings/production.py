@@ -11,3 +11,5 @@ REG_FORM_EMAIL_SENDER = "ZS Na Pohodu <noreply@zapis.skolanapohodu.cz>"
 REG_FORM_EMAIL_REPLYTO = "ZS Na Pohodu <info@skolanapohodu.cz>"
 REG_FORM_EMAIL_CC = ["info@skolanapohodu.cz"]
 CONTACT_URL = "https://www.skolanapohodu.cz/kontakty/"
+
+CSRF_TRUSTED_ORIGINS = ["https://zapis.skolanapohodu.cz"]
